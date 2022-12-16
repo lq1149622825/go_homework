@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var MyProxyInfo = GetConfigInfo()
+var MyProxy = GetConfigInfo()
 
 func GetConfigInfo() *viper.Viper {
 	path, err := os.Getwd()

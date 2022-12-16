@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/spf13/viper"
+	"github.com/fatih/color"
 	"go_homework/utils"
 	"os"
 
@@ -12,35 +11,35 @@ import (
 var check = false
 var reload = false
 
-func reloadMyProxy(myProxy **viper.Viper) {
-	*myProxy = utils.GetConfigInfo()
-}
+var MyProxyInfo = utils.MyProxy
 
 func CheckConfigFormat() bool {
-	if utils.GetConfigInfo().GetString("proxy_server.location.proxy_pass") == "" || utils.GetConfigInfo().GetString("proxy_server.listen") == "" {
-		return false
-	} else {
-		return true
-	}
+	return (MyProxyInfo.GetString("proxy_server.location.proxy_pass") == "") && (MyProxyInfo.GetString("proxy_server.listen") != "")
+
 }
 
-func checkConfig(cmd *cobra.Command, args []string) {
+func checkAndReloadInitConfig(cmd *cobra.Command, args []string) {
+	colorPrint := color.New()
 	if !CheckConfigFormat() {
-		fmt.Println("config info error!")
+		colorPrint.Add(color.FgRed)
+		colorPrint.Println("config info error!")
 		os.Exit(1)
 	}
 	if reload {
-		reloadMyProxy(&utils.MyProxyInfo)
-		fmt.Println("reload success")
+		//TODO 进程通信 告知app服务 需要ReadInConfig
+
+		colorPrint.Add(color.FgGreen)
+		colorPrint.Println("reload success!")
 	}
 	if check {
-		fmt.Println("check config success!")
+		colorPrint.Add(color.FgGreen)
+		colorPrint.Println("check config success!")
 	}
 }
 
 var checkCmd = &cobra.Command{
 	Use: "check",
-	Run: checkConfig,
+	Run: checkAndReloadInitConfig,
 }
 
 func init() {

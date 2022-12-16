@@ -9,8 +9,10 @@ import (
 	"net/url"
 )
 
+var proxy = utils.MyProxy
+
 func Proxy(c *gin.Context) {
-	remote, err := url.Parse(utils.MyProxyInfo.GetString("proxy_server.location.proxy_pass"))
+	remote, err := url.Parse(proxy.GetString("proxy_server.location.proxy_pass"))
 	if err != nil {
 		panic(err)
 	}
@@ -27,10 +29,9 @@ func Proxy(c *gin.Context) {
 }
 
 func main() {
-	fmt.Println(utils.MyProxyInfo.GetString("proxy_server.location.proxy_pass"))
 	server := gin.Default()
 	server.Any("", Proxy)
-	err := server.Run(utils.MyProxyInfo.GetString("proxy_server.listen"))
+	err := server.Run(proxy.GetString("proxy_server.listen"))
 	if err != nil {
 		fmt.Println("server failure")
 	}
